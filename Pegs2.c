@@ -17,6 +17,7 @@ typedef struct point {
 
 point** points;
 int* raw; // used for initializing path in point
+path* valid_paths;
 
 void put_point(int lo, int np);
 void put_raw(int n, ...);
@@ -25,55 +26,62 @@ void free_point(point* p); // also frees raw
 void free_all();
 
 int valid_path(path p);
+void move();
 
 void print(int* arr, int length);
-void print_path(path p);
+void print_path(path p, int num);
 void print_board();
 
 int main() {
 	init_all();
 	
 	printf("Welcome to the game of Pegs!\n");
-	
-//	for (int i = 0; i < 15; i++) {
-//		printf("Point %d:\n", i);
-//		path* paths = points[i]->paths;
-//		for (int j = 0; j < points[i]->num_paths; j++) {
-//			printf("[%d, %d]\n", paths[j].first, paths[j].second);
-//		}
-//		printf("\n");
-//	}
-
 	print_board();
 	int selected = 0;
 	printf("Select a point to be empty: ");
 	scanf("%d", &selected);
 	points[selected - 1]->occupied = 0;
 	
+	int selected_path = 0;
 	while (1) {
 		print_board();
-		printf("Select a point: ");
+		printf("Select a point (20 to quit): ");
 		scanf("%d", &selected);
-		if (!points[selected - 1]->occupied) {
+		if (selected == 20) {
+			printf("\nGoodbye!\n");
+			break;
+		}
+		if (selected > 15 || selected < 0) {
+			printf("This is not a valid point. Please Try Again.\n");
+			continue;
+		}
+		
+		selected--;
+		if (!points[selected]->occupied) {
 			printf("This point is not occupied. Please Try Again.\n");
 			continue;
 		}
-		path* paths = points[selected - 1]->paths;
-		int np = points[selected - 1]->num_paths;
-		int* valid = (int*) malloc(sizeof(int) * 4);
-		int c = 0;
+		
+		printf("\n");
+		
+		path* paths = points[selected]->paths;
+		int np = points[selected]->num_paths;
+		int valid_count = 0;
 		for (int i = 0; i < np; i++) {
 			if (valid_path(paths[i])) {
-				print_path(paths[i]);
-				c++;
+				print_path(paths[i], valid_count + 1);
+				valid_paths[valid_count++] = paths[i];
 			}
 		}
-		if (c == 0) {
+		
+		if (valid_count == 0) {
 			printf("No Valid Paths Found. Please try Again.\n");
-			free(valid);
-			continue;
+		} else {
+			printf("\nSelect path to take (1 - %d): ", valid_count);
+			scanf("%d", &selected_path);
+			selected_path--;
+			move(selected, selected_path);
 		}
-		break;
 	}
 	
 	free_all();
@@ -105,11 +113,12 @@ void put_raw(int n, ...) {
 void init_all() {
 	points = (point**) malloc(sizeof(point*) * 15);
 	raw = (int*) malloc(sizeof(int) * 8);
+	valid_paths = (path*) malloc(sizeof(path) * 4);
 	
 	put_raw(4, 1, 3, 2, 5);
 	put_point(0, 2);
 	
-	put_raw(4, 3, 6, 7, 12);
+	put_raw(4, 3, 6, 4, 8);
 	put_point(1, 2);
 	
 	put_raw(4, 4, 7, 5, 9);
@@ -162,10 +171,24 @@ void free_all() {
 		free_point(points[i]);
 	free(points);
 	free(raw);
+	free(valid_paths);
 }
 
 int valid_path(path p) {
 	return points[p.first]->occupied && !points[p.second]->occupied;
+}
+
+void move(int selected, int selected_path) {
+	int b = selected;
+	int m = valid_paths[selected_path].first;
+	int e = valid_paths[selected_path].second;
+	point* begin = points[b];
+	point* middle = points[m];
+	point* end = points[e];
+	
+	begin->occupied = 0;
+	middle->occupied = 0;
+	end->occupied = 1;
 }
 
 void print(int* arr, int length) {
@@ -177,8 +200,8 @@ void print(int* arr, int length) {
 	}
 }
 
-void print_path(path p) {
-	printf("[%d, %d]\n", p.first + 1, p.second + 1);
+void print_path(path p, int num) {
+	printf("%d: [%d, %d]\n", num, p.first + 1, p.second + 1);
 }
 
 void print_board() {
