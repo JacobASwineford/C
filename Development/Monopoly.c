@@ -37,6 +37,8 @@ typedef struct event {
 	activation effect;
 } event;
 
+void init();
+
 // when players land on the spaces on the board, these functions will run
 void pact(void); // property
 void ccact(void); // community chest
@@ -55,12 +57,16 @@ player* pcurrent;
 
 activation landing;
 activation chest;
-activation  chance;
+activation chance;
 
 int pot;
 
 int main () {
 	activation act = &pact;
+	
+	player pl;
+	pl.name = "player 1";
+	printf("%s\n", pl.name);
 	
 	(*act)();
 	

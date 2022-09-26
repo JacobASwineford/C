@@ -9,14 +9,13 @@ void printc(char* arr, int length);
 int* code;
 int* guess;
 char* clue;
-int* blist;
 
 int code_length;
 
 int main() {
 	int length = 0;
 	int num_choices = 0;
-	printf("Enter length and number of choices: ");
+	printf("\nEnter length and number of choices: ");
 	scanf("%d %d", &length, &num_choices);
 	generate_code(length, num_choices);
 	
@@ -29,39 +28,48 @@ int main() {
 			clue[i] = 'r';
 		}
 		
-		// test for exact match
+		// test for green
 		for (int i = 0; i < length; i++) {
 			if (guess[i] == code[i]) {
 				clue[i] = 'g';
-				blist[i] = 1;
 			}
 		}
 		
 		// test for yellow
+		for (int i = 0; i < length; i++) {
+			for (int j = 0; j < length; j++) {
+				if (guess[i] == code[j] && clue[j] != 'g') {
+					clue[i] = 'y';
+					break;
+				}
+			}
+		}
 		
+		printf("\nguess: ");
+		print(guess, length);
+		printf("clue: ");
+		printc(clue, length);
 		
+		// check for end of the game
+		int end = 1;
+		for (int i = 0; i < length; i++) {
+			if (clue[i] != 'g') end = 0;
+		}
 		
-		break;
+		if (end) {
+			printf("\nCongratulations, you win! the code is: ");
+			print(code, length);
+			break;
+		}
 		
+		// after printing clue, revert clue back to red
+		for (int i = 0; i < length; i++)
+			clue[i] = 'r';
 	}
-	
-	printf("code: ");
-	print(code, length);
-	printf("guess: ");
-	print(guess, length);
-	printf("clue: ");
-	printc(clue, length);
-	printf("blist: ");
-	print(blist, length);
-	// 1 1 2 2
-	// 2 2 2 4
-	// y r g r  
-	
 	
 	free(code);
 	free(guess);
 	free(clue);
-	free(blist);
 }
 
 void generate_code(int length, int num_choices) {
@@ -69,9 +77,7 @@ void generate_code(int length, int num_choices) {
 	code = (int*) malloc(sizeof(int) * length);
 	clue = (char*) malloc(length);
 	guess = (int*) malloc(sizeof(int) * length);
-	blist = (int*) malloc(sizeof(int) * length);
 	for (int i = 0; i < length; i++) {
-		blist[i] = 0;
 		code[i] = rand() % num_choices;
 	}
 }
