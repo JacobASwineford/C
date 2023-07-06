@@ -1,0 +1,28 @@
+-Player 0:
+Name:Jacob Swineford
+Money:1500
+bankrupt:false
+Location:0
+Properties:1(2) 3(3) 6(4)
+Utilities:12 28
+Railroads:5 15 25 35
+
+-Player 1:
+Name:Casey Glen Fox
+Money:1500
+Bankrupt:false
+Location:0
+Properties:3(3)
+Utilities:
+Railroads:
+
+-Player 2:
+Name:BackyBackpackv2
+Money:1500
+Bankrupt:false
+Location:0
+Properties:6(4)
+Utilities:
+Railroads:
+
+^turn:0

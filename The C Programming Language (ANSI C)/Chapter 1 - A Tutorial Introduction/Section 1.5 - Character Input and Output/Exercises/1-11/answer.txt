@@ -1,0 +1,6 @@
+Question: How would you test the word count program? What kinds
+of inputs are most likely to uncover bugs if there are any?
+
+Answer: You would test the word count program by providing it input
+to process. You are most likely to encounter bugs using input that
+are edge cases, such as an empty input.
