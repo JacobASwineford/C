@@ -7,18 +7,6 @@ int in(char, char*);
 
 void *alloc(int);
 
-int main() {
-    char str[100] = "hi there, how are you?";
-    char delims[6] = " ";
-    int toks = tokens(str, delims);
-    char **tokens = tokenize(str, delims);
-
-    int i;
-    for (i = 0; i < toks; i++)
-        printf("# '%s' #\n", *(tokens + i));
-    return 0;
-}
-
 #define MAXTOKLEN 100
 
 /**
@@ -27,10 +15,10 @@ and returns references to those tokens. The tokens are copied
 into statically allocated memory.
 */
 char **tokenize(char *str, char *delims) {
-    char **toks = alloc(sizeof(char*) * tokens(str, delims));
+    char **toks = alloc((sizeof(char*) * (tokens(str, delims) + 1)));
     char buf[MAXTOKLEN];
     char *bufp = buf;
-    int i, inside = 0, tokens = 0, ind = 0;
+    int i, inside = 0, tokens = 0;
     void *cpy;
     while (1) {
         i = in(*str, delims);
@@ -59,6 +47,7 @@ char **tokenize(char *str, char *delims) {
         str++;
     }
 
+    *(toks + tokens) = 0; // null
     return toks;
 }
 
